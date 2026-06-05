@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>امتحان الفصل الثالث - الإحصاء</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card2: #1a2235;
+    --accent: #3b82f6;
+    --accent2: #60a5fa;
+    --correct: #10b981;
+    --wrong: #ef4444;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #1e3a5f;
+    --gold: #f59e0b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(ellipse at 20% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(16,185,129,0.05) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    border-bottom: 2px solid var(--border);
+    padding: 20px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+  }
+
+  .header-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .header-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-title span { font-size: 1.4rem; }
+
+  .progress-wrap {
+    flex: 1;
+    min-width: 160px;
+    max-width: 300px;
+  }
+
+  .progress-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: #1e3a5f;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--correct));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .score-badge {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .score-correct { color: var(--correct); }
+  .score-wrong { color: var(--wrong); }
+
+  /* MAIN */
+  .main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 28px 16px 60px;
+  }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideIn 0.4s ease forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--correct));
+    opacity: 0.6;
+  }
+
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .q-number {
+    background: var(--accent);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 99px;
+  }
+
+  .q-topic {
+    font-size: 0.72rem;
+    color: var(--muted);
+    background: var(--card2);
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+  }
+
+  .q-text {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    color: #f1f5f9;
+  }
+
+  /* OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    background: var(--card2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 18px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: right;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option:hover:not(.answered) {
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.1);
+    transform: translateX(-4px);
+  }
+
+  .option-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .option.correct {
+    background: rgba(16,185,129,0.15);
+    border-color: var(--correct);
+    animation: pulse-green 0.4s ease;
+  }
+
+  .option.correct .option-letter {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: white;
+  }
+
+  .option.wrong {
+    background: rgba(239,68,68,0.12);
+    border-color: var(--wrong);
+    animation: shake 0.4s ease;
+  }
+
+  .option.wrong .option-letter {
+    background: var(--wrong);
+    border-color: var(--wrong);
+    color: white;
+  }
+
+  .option.show-correct {
+    background: rgba(16,185,129,0.08);
+    border-color: rgba(16,185,129,0.4);
+  }
+
+  .option.answered { cursor: default; }
+
+  @keyframes pulse-green {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .feedback.show { display: flex; }
+  .feedback.correct-fb { background: rgba(16,185,129,0.15); color: var(--correct); border: 1px solid rgba(16,185,129,0.3); }
+  .feedback.wrong-fb { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESULTS */
+  .results {
+    display: none;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 28px;
+    text-align: center;
+    animation: slideIn 0.5s ease forwards;
+    margin-top: 20px;
+  }
+
+  .results.show { display: block; }
+
+  .results-icon { font-size: 4rem; margin-bottom: 16px; }
+
+  .results-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .results-score {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--gold);
+    margin: 16px 0;
+  }
+
+  .results-grade {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .results-stat {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 8px;
+  }
+
+  .results-stat-num { font-size: 1.8rem; font-weight: 900; }
+  .results-stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+  .green { color: var(--correct); }
+  .red { color: var(--wrong); }
+  .blue { color: var(--accent2); }
+
+  .restart-btn {
+    background: linear-gradient(135deg, var(--accent), #2563eb);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+  }
+
+  .restart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(59,130,246,0.5);
+  }
+
+  /* FINISH BTN */
+  .finish-wrap {
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .finish-btn {
+    background: linear-gradient(135deg, var(--gold), #d97706);
+    color: #0a0e1a;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 32px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    font-family: 'Cairo', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .finish-btn:hover { transform: translateY(-2px); }
+
+  /* DELAY EACH CARD */
+  .question-card:nth-child(1) { animation-delay: 0.05s; }
+  .question-card:nth-child(2) { animation-delay: 0.10s; }
+  .question-card:nth-child(3) { animation-delay: 0.15s; }
+
+  @media (max-width: 500px) {
+    .results-grid { grid-template-columns: 1fr 1fr; }
+    .header-inner { gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-title"><span>📊</span> امتحان الفصل الثالث</div>
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>التقدم</span>
+        <span id="prog-label">0 / 50</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+    <div class="score-badge">
+      <span class="score-correct">✓ <span id="score-c">0</span></span>
+      <span class="score-wrong">✗ <span id="score-w">0</span></span>
+    </div>
+  </div>
+</div>
+
+<div class="main" id="main-container"></div>
+
+<script>
+const questions = [
+  { q: "A statistic used to estimate a population parameter is called:", opts: ["Population mean","Point estimator","Confidence interval","Bias"], ans: 1, topic: "Point Estimation" },
+  { q: "If E(Θ̂) = θ, the estimator is called:", opts: ["Efficient","Biased","Unbiased","Consistent"], ans: 2, topic: "Unbiased Estimator" },
+  { q: "The bias of an estimator Θ̂ is defined as:", opts: ["E(Θ̂) × θ","E(Θ̂) + θ","E(Θ̂) − θ","Var(Θ̂)"], ans: 2, topic: "Bias" },
+  { q: "The sample mean X̄ is:", opts: ["Biased estimator of µ","Unbiased estimator of µ","Unbiased estimator of σ²","Biased estimator of σ²"], ans: 1, topic: "Sample Mean" },
+  { q: "The sample variance S² is defined with denominator:", opts: ["n","n+1","n−1","n−2"], ans: 2, topic: "Sample Variance" },
+  { q: "The sample standard deviation S is:", opts: ["Unbiased estimator of σ","Biased estimator of σ","Unbiased estimator of σ²","Equal to σ"], ans: 1, topic: "Sample Std Dev" },
+  { q: "The most efficient estimator among unbiased estimators is the one with:", opts: ["Largest variance","Smallest bias","Smallest variance","Largest sample size"], ans: 2, topic: "Efficient Estimator" },
+  { q: "MSE(Θ̂) is defined as:", opts: ["E(Θ̂ − θ)","E(Θ̂ − θ)²","[E(Θ̂)]²","Var(Θ̂) − θ"], ans: 1, topic: "MSE" },
+  { q: "For sample {1, 2, 3, 4}, the sample mean is:", opts: ["2.0","2.5","3.0","1.5"], ans: 1, topic: "Example 3" },
+  { q: "For sample {1, 2, 3, 4}, the sample variance S² is:", opts: ["1.25","1.50","1.66","2.00"], ans: 2, topic: "Example 3" },
+  { q: "A confidence interval with level (1−α) means:", opts: ["P(L < θ < U) = α","P(L < θ < U) = 1−α","P(L < θ < U) = α/2","P(L < θ < U) = 1−α/2"], ans: 1, topic: "Confidence Interval" },
+  { q: "For a 95% confidence interval, the value of α is:", opts: ["0.95","0.10","0.05","0.025"], ans: 2, topic: "CI Basics" },
+  { q: "The z-value for a 95% confidence interval (z_{α/2}) is:", opts: ["1.28","1.64","1.96","2.58"], ans: 2, topic: "Z-values" },
+  { q: "The z-value for a 99% confidence interval is:", opts: ["1.96","2.05","2.33","2.58"], ans: 3, topic: "Z-values" },
+  { q: "The confidence interval for µ when σ is known is:", opts: ["X̄ ± z_{α/2}·σ·√n","X̄ ± z_{α/2}·σ/√n","X̄ ± t_{α/2}·S/√n","X̄ ± z_{α/2}·S/√n"], ans: 1, topic: "CI σ Known" },
+  { q: "In Example 1 (zinc), n=36, X̄=2.6, σ=0.3. The 95% CI is:", opts: ["2.40 < µ < 2.80","2.50 < µ < 2.70","2.45 < µ < 2.75","2.55 < µ < 2.65"], ans: 1, topic: "Example 1" },
+  { q: "In Example 1, the 99% CI for µ is:", opts: ["2.50 < µ < 2.70","2.45 < µ < 2.75","2.47 < µ < 2.73","2.42 < µ < 2.78"], ans: 2, topic: "Example 1" },
+  { q: "The Maximum Error of the Estimate E equals:", opts: ["z_{α/2}·σ·√n","z_{α/2}·σ/√n","t_{α/2}·S/n","z_{α/2}/σ√n"], ans: 1, topic: "Max Error" },
+  { q: "The required sample size n to achieve error ≤ E is:", opts: ["n = (z_{α/2}·E/σ)²","n = (z_{α/2}·σ·E)²","n = (z_{α/2}·σ/E)²","n = z_{α/2}·σ/E"], ans: 2, topic: "Sample Size" },
+  { q: "In Example 3, σ=0.3, E=0.05, 95% confidence. The required n is:", opts: ["100","120","139","150"], ans: 2, topic: "Example 3" },
+  { q: "In Example 4, σ=3, E=1, 99% confidence. The required n is:", opts: ["45","50","60","75"], ans: 2, topic: "Example 4" },
+  { q: "A one-sided upper confidence bound on µ (σ known) is:", opts: ["X̄ + z_{α/2}·σ/√n","X̄ − z_α·σ/√n","X̄ + z_α·σ/√n","X̄ + t_α·S/√n"], ans: 2, topic: "One-sided Bound" },
+  { q: "In Example 5, n=25, X̄=6.2, σ²=4. The upper 95% bound is:", opts: ["6.528","6.658","6.858","7.058"], ans: 2, topic: "Example 5" },
+  { q: "When σ is unknown and n is small, we use:", opts: ["Z-distribution","Chi-square distribution","t-distribution","F-distribution"], ans: 2, topic: "t-distribution" },
+  { q: "The degrees of freedom for the t-distribution (one sample) is:", opts: ["n","n−1","n+1","n−2"], ans: 1, topic: "Degrees of Freedom" },
+  { q: "The t-statistic is defined as:", opts: ["T = (X̄ − µ)/(σ/√n)","T = (X̄ − µ)/(S/√n)","T = (X̄ − µ)·√n/σ","T = S/(X̄ − µ)"], ans: 1, topic: "t-statistic" },
+  { q: "In Example 6, n=7. The value t_{0.025, 6} is:", opts: ["1.943","2.306","2.365","2.447"], ans: 3, topic: "Example 6" },
+  { q: "In Example 6, the 95% CI for µ is approximately:", opts: ["9.50 < µ < 10.50","9.64 < µ < 10.36","9.74 < µ < 10.26","9.80 < µ < 10.20"], ans: 2, topic: "Example 6" },
+  { q: "When n ≥ 30 and σ is unknown, we apply:", opts: ["t-distribution always","Z-distribution (large sample)","Chi-square distribution","None of the above"], ans: 1, topic: "Large Sample" },
+  { q: "In Example 7, n=500, X̄=501, S=112, 99% CI gives:", opts: ["490 < µ < 512","488.1 < µ < 513.9","485 < µ < 517","492 < µ < 510"], ans: 1, topic: "Example 7" },
+  { q: "In Example 8, n=9, the distribution of (X̄−µ)/(S/√9) follows:", opts: ["Z ~ N(0,1)","t-distribution with 9 d.f.","t-distribution with 8 d.f.","Chi-square with 8 d.f."], ans: 2, topic: "Example 8" },
+  { q: "In Example 8, the 95% CI for mean diameter is:", opts: ["0.990 < µ < 1.020","0.986 < µ < 1.025","0.980 < µ < 1.030","0.975 < µ < 1.035"], ans: 1, topic: "Example 8" },
+  { q: "In Example 9 (light bulbs), n=100. The distribution used is:", opts: ["t-distribution","Z ~ N(0,1)","Chi-square","F-distribution"], ans: 1, topic: "Example 9" },
+  { q: "In Example 9, the 98% CI for mean lifetime is:", opts: ["785 < µ < 815","790.68 < µ < 809.32","792 < µ < 808","788 < µ < 812"], ans: 1, topic: "Example 9" },
+  { q: "In Example 9 part (c), 96% confidence, E=10, σ≈40. Required n is:", opts: ["55","60","68","75"], ans: 2, topic: "Example 9" },
+  { q: "In Example 10 (IQ), n=25, X̄=110, σ=10. The 95% CI is:", opts: ["108 < µ < 112","106.08 < µ < 113.92","105 < µ < 115","107 < µ < 113"], ans: 1, topic: "Example 10" },
+  { q: "In Example 10 part (b), σ unknown, S=8, n=25. The value t_{0.025, 24} is:", opts: ["1.96","2.000","2.064","2.131"], ans: 2, topic: "Example 10" },
+  { q: "The t-distribution should be used when:", opts: ["n ≥ 30 and σ is known","n < 30, population normal, σ unknown","n ≥ 30 and σ is unknown","Any sample size with known σ"], ans: 1, topic: "Z vs t" },
+  { q: "The CI for µ₁ − µ₂ when σ₁² and σ₂² are known uses:", opts: ["t-distribution","Z-distribution","F-distribution","Chi-square"], ans: 1, topic: "Two-Sample CI" },
+  { q: "The CI for µ₁ − µ₂ is centered at:", opts: ["X̄₁ + X̄₂","X̄₁ − X̄₂","(X̄₁ + X̄₂)/2","X̄₁ × X̄₂"], ans: 1, topic: "Two-Sample CI" },
+  { q: "In Example 11, X̄_B=42, X̄_A=36. Point estimate of µ_B − µ_A is:", opts: ["78","39","6","3"], ans: 2, topic: "Example 11" },
+  { q: "In Example 11, the 96% CI for µ_B − µ_A is:", opts: ["2.43 < µ_B−µ_A < 9.57","3.43 < µ_B−µ_A < 8.57","4.00 < µ_B−µ_A < 8.00","1.50 < µ_B−µ_A < 10.50"], ans: 1, topic: "Example 11" },
+  { q: "When σ₁² = σ₂² but both unknown, we compute:", opts: ["Separate variances","Average variance","Pooled variance S_P²","Maximum variance"], ans: 2, topic: "Pooled Variance" },
+  { q: "The pooled variance S_P² uses degrees of freedom:", opts: ["n₁ + n₂","n₁ + n₂ − 1","n₁ + n₂ − 2","n₁ × n₂ − 2"], ans: 2, topic: "Pooled Variance" },
+  { q: "In Example 12, n₁=12, S₁=0.771, n₂=10, S₂=0.448. S_P² equals:", opts: ["0.317","0.417","0.517","0.617"], ans: 1, topic: "Example 12" },
+  { q: "In Example 12, S_P equals approximately:", opts: ["0.546","0.646","0.746","0.446"], ans: 1, topic: "Example 12" },
+  { q: "In Example 12, the 90% CI for µ₁ − µ₂ is:", opts: ["0.393 < µ₁−µ₂ < 1.747","0.493 < µ₁−µ₂ < 1.647","0.593 < µ₁−µ₂ < 1.547","0.693 < µ₁−µ₂ < 1.447"], ans: 2, topic: "Example 12" },
+  { q: "A wider confidence interval means:", opts: ["Less confidence","More confidence","Smaller sample size needed","Smaller error"], ans: 1, topic: "CI Interpretation" },
+  { q: "The standard deviation of an estimator is called:", opts: ["Variance","Bias","Standard error","MSE"], ans: 2, topic: "Terminology" },
+  { q: "If B(Θ̂) = 0 for all values of θ, then Θ̂ is:", opts: ["Efficient","Unbiased","Consistent","Sufficient"], ans: 1, topic: "Unbiased Estimator" }
+];
+
+const letters = ['A','B','C','D'];
+let answered = new Array(questions.length).fill(false);
+let correct = 0, wrong = 0;
+
+function updateHeader() {
+  const total = answered.filter(Boolean).length;
+  document.getElementById('prog-label').textContent = `${total} / ${questions.length}`;
+  document.getElementById('prog-fill').style.width = `${(total/questions.length)*100}%`;
+  document.getElementById('score-c').textContent = correct;
+  document.getElementById('score-w').textContent = wrong;
+}
+
+function checkFinished() {
+  if (answered.every(Boolean)) {
+    document.getElementById('finish-wrap').style.display = 'block';
+    document.getElementById('finish-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function showResults() {
+  const pct = Math.round((correct / questions.length) * 100);
+  let grade, icon;
+  if (pct >= 90) { grade = 'ممتاز! 🏆'; icon = '🎉'; }
+  else if (pct >= 75) { grade = 'جيد جداً 👍'; icon = '😊'; }
+  else if (pct >= 60) { grade = 'جيد'; icon = '📚'; }
+  else { grade = 'تحتاج مذاكرة أكتر 💪'; icon = '😅'; }
+
+  document.getElementById('res-icon').textContent = icon;
+  document.getElementById('res-pct').textContent = pct + '%';
+  document.getElementById('res-grade').textContent = grade;
+  document.getElementById('res-c').textContent = correct;
+  document.getElementById('res-w').textContent = wrong;
+  document.getElementById('res-skip').textContent = questions.length - correct - wrong;
+  document.getElementById('results').classList.add('show');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function restart() {
+  answered = new Array(questions.length).fill(false);
+  correct = 0; wrong = 0;
+  updateHeader();
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('finish-wrap').style.display = 'none';
+  document.querySelectorAll('.option').forEach(o => {
+    o.classList.remove('correct','wrong','show-correct','answered');
+  });
+  document.querySelectorAll('.feedback').forEach(f => {
+    f.classList.remove('show','correct-fb','wrong-fb');
+    f.innerHTML = '';
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildQuiz() {
+  const container = document.getElementById('main-container');
+  questions.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.style.animationDelay = `${qi * 0.03}s`;
+
+    const opts = q.opts.map((o, oi) => `
+      <div class="option" id="opt-${qi}-${oi}" onclick="choose(${qi}, ${oi})">
+        <span class="option-letter">${letters[oi]}</span>
+        <span>${o}</span>
+      </div>
+    `).join('');
+
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-number">س ${qi+1}</span>
+        <span class="q-topic">${q.topic}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">${opts}</div>
+      <div class="feedback" id="fb-${qi}"></div>
+    `;
+    container.appendChild(card);
+  });
+
+  // finish button
+  const fw = document.createElement('div');
+  fw.id = 'finish-wrap';
+  fw.className = 'finish-wrap';
+  fw.innerHTML = `<button class="finish-btn" onclick="showResults()">🏁 عرض النتيجة النهائية</button>`;
+  container.appendChild(fw);
+
+  // results
+  const res = document.createElement('div');
+  res.id = 'results';
+  res.className = 'results';
+  res.innerHTML = `
+    <div class="results-icon" id="res-icon"></div>
+    <div class="results-title">نتيجتك النهائية</div>
+    <div class="results-score" id="res-pct"></div>
+    <div class="results-grade" id="res-grade"></div>
+    <div class="results-grid">
+      <div class="results-stat"><div class="results-stat-num green" id="res-c">0</div><div class="results-stat-label">إجابات صح</div></div>
+      <div class="results-stat"><div class="results-stat-num red" id="res-w">0</div><div class="results-stat-label">إجابات غلط</div></div>
+      <div class="results-stat"><div class="results-stat-num blue" id="res-skip">0</div><div class="results-stat-label">من أصل 50</div></div>
+    </div>
+    <button class="restart-btn" onclick="restart()">🔄 ابدأ من جديد</button>
+  `;
+  container.appendChild(res);
+}
+
+function choose(qi, oi) {
+  if (answered[qi]) return;
+  answered[qi] = true;
+
+  const q = questions[qi];
+  const allOpts = document.querySelectorAll(`[id^="opt-${qi}-"]`);
+  allOpts.forEach(o => o.classList.add('answered'));
+
+  const selected = document.getElementById(`opt-${qi}-${oi}`);
+  const correctOpt = document.getElementById(`opt-${qi}-${q.ans}`);
+  const fb = document.getElementById(`fb-${qi}`);
+
+  if (oi === q.ans) {
+    correct++;
+    selected.classList.add('correct');
+    fb.innerHTML = '✅ إجابة صحيحة!';
+    fb.className = 'feedback correct-fb show';
+  } else {
+    wrong++;
+    selected.classList.add('wrong');
+    correctOpt.classList.add('show-correct');
+    fb.innerHTML = `❌ إجابة خاطئة — الصح هو: <strong>${letters[q.ans]}) ${q.opts[q.ans]}</strong>`;
+    fb.className = 'feedback wrong-fb show';
+  }
+
+  updateHeader();
+  checkFinished();
+}
+
+buildQuiz();
+updateHeader();
+</script>
+</body>
+</html>
