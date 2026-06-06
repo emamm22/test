@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statistics Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d2e;
+    --card: #20243a;
+    --border: #2e3352;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --success: #43e97b;
+    --error: #ff6b6b;
+    --text: #e8eaf6;
+    --muted: #8892b0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(108,99,255,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(255,101,132,0.08) 0%, transparent 50%);
+  }
+
+  header {
+    text-align: center;
+    padding: 48px 20px 32px;
+  }
+  header::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    margin: 16px auto 0;
+    border-radius: 2px;
+  }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-top: 8px;
+  }
+
+  .progress-wrap {
+    max-width: 820px;
+    margin: 0 auto 32px;
+    padding: 0 20px;
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .section-title {
+    max-width: 820px;
+    margin: 24px auto 16px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  .section-title .line { flex: 1; height: 1px; background: var(--border); }
+  .section-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(108,99,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .question-card.answered::before { opacity: 1; }
+  .question-card.answered { border-color: rgba(108,99,255,0.3); }
+
+  .question-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .q-num {
+    min-width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(108,99,255,0.15);
+    border: 1px solid rgba(108,99,255,0.3);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .q-text {
+    font-size: 0.975rem;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 50px;
+  }
+
+  .option-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 18px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.93rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--text);
+    background: rgba(108,99,255,0.08);
+    transform: translateX(3px);
+  }
+  .option-letter {
+    min-width: 28px; height: 28px;
+    border-radius: 7px;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+  .option-btn:hover:not(:disabled) .option-letter {
+    background: var(--accent);
+    color: #fff;
+  }
+  .option-text { flex: 1; }
+
+  .option-btn.correct {
+    border-color: var(--success);
+    background: rgba(67,233,123,0.1);
+    color: var(--success);
+    cursor: default;
+  }
+  .option-btn.correct .option-letter { background: var(--success); color: #0f1117; }
+  .option-btn.wrong {
+    border-color: var(--error);
+    background: rgba(255,107,107,0.1);
+    color: var(--error);
+    cursor: default;
+  }
+  .option-btn.wrong .option-letter { background: var(--error); color: #fff; }
+  .option-btn.dimmed { opacity: 0.35; cursor: default; }
+  .option-btn:disabled { cursor: default; }
+
+  .feedback {
+    margin-top: 14px;
+    margin-left: 50px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    animation: fadeSlide 0.3s ease;
+  }
+  .feedback.show { display: flex; }
+  .feedback.correct-fb {
+    background: rgba(67,233,123,0.1);
+    border: 1px solid rgba(67,233,123,0.3);
+    color: var(--success);
+  }
+  .feedback.wrong-fb {
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.3);
+    color: var(--error);
+  }
+  .fb-icon { font-size: 1.2rem; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .scoreboard {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    z-index: 100;
+    min-width: 120px;
+  }
+  .score-val {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .score-val span { color: var(--accent); }
+
+  .result-banner {
+    display: none;
+    max-width: 820px;
+    margin: 0 auto 32px;
+    padding: 0 20px;
+  }
+  .result-banner.show { display: block; }
+  .result-inner {
+    background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(255,101,132,0.1));
+    border: 1px solid rgba(108,99,255,0.3);
+    border-radius: 20px;
+    padding: 36px;
+    text-align: center;
+  }
+  .result-emoji { font-size: 3rem; margin-bottom: 12px; }
+  .result-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+  .result-sub { color: var(--muted); font-size: 1rem; }
+  .result-score-big {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 16px 0 8px;
+    line-height: 1;
+  }
+
+  @media (max-width: 600px) {
+    .scoreboard { top: auto; bottom: 20px; right: 50%; transform: translateX(50%); }
+    .options { padding-left: 0; }
+    .feedback { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scoreboard">
+  <div class="score-val"><span id="scoreNum">0</span>/<span id="totalNum">40</span></div>
+  <div>correct</div>
+</div>
+
+<header>
+  <h1>📊 Statistics Exam</h1>
+  <p class="subtitle">Pick an answer — instant feedback on every question</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-info">
+    <span>Progress</span>
+    <span id="progressText">0 / 40 questions</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="result-banner" id="resultBanner">
+  <div class="result-inner">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-title" id="resultTitle">Exam Complete!</div>
+    <div class="result-score-big" id="resultScoreBig">0/40</div>
+    <div class="result-sub" id="resultSub"></div>
+  </div>
+</div>
+
+<div class="container" id="examContainer"></div>
+
+<script>
+const questions = [
+  // 1. Statistical Analysis
+  {
+    section: "1. Statistical Analysis",
+    sectionIcon: "📐",
+    q: "What is the mean of the following dataset: {10, 15, 20, 25, 30}?",
+    opts: ["18","20","22","25"],
+    ans: 1
+  },
+  {
+    q: "If the dataset {8, 10, 12, 14, 16} is extended to include one more value, what would the new median be?",
+    opts: ["12","13","14","15"],
+    ans: 1
+  },
+  {
+    q: "What is the mode of the dataset: {5, 7, 7, 8, 9, 9, 9, 10}?",
+    opts: ["5","7","8","9"],
+    ans: 3
+  },
+  {
+    q: "If a dataset has a range of 20 and its lowest value is 5, what is its highest value?",
+    opts: ["15","20","25","30"],
+    ans: 2
+  },
+  {
+    q: "Calculate the standard deviation of the dataset: {3, 5, 7, 9, 11}",
+    opts: ["2","3","4","5"],
+    ans: 0
+  },
+  // 2. Probability
+  {
+    section: "2. Probability",
+    sectionIcon: "🎲",
+    q: "What is the probability of rolling an even number on a fair six-sided die?",
+    opts: ["1/6","1/3","1/2","2/3"],
+    ans: 2
+  },
+  {
+    q: "If you flip a fair coin three times, what is the probability of getting exactly two heads?",
+    opts: ["1/8","3/8","1/4","1/2"],
+    ans: 1
+  },
+  {
+    q: "A bag contains 5 red balls, 3 green balls, and 2 blue balls. What is the probability of selecting a blue ball?",
+    opts: ["1/2","1/5","1/3","2/5"],
+    ans: 1
+  },
+  {
+    q: "In a deck of playing cards (52 cards), what is the probability of drawing a diamond card?",
+    opts: ["1/13","1/4","1/26","1/2"],
+    ans: 1
+  },
+  {
+    q: "Two dice are rolled. What is the probability of getting a sum of 7?",
+    opts: ["1/6","1/12","1/9","1/36"],
+    ans: 0
+  },
+  {
+    q: "In a standard deck of 52 playing cards, what is the probability of drawing a king given that the card drawn is red?",
+    opts: ["1/26","1/13","1/6","1/4"],
+    ans: 1
+  },
+  {
+    q: "A bag contains 4 red marbles and 6 blue marbles. If two marbles are drawn without replacement, what is the probability that both are red?",
+    opts: ["1/6","1/5","2/15","2/9"],
+    ans: 2
+  },
+  {
+    q: "A family has two children, and at least one of them is a boy. What is the probability that both children are boys?",
+    opts: ["1/2","1/3","1/4","1/6"],
+    ans: 1
+  },
+  {
+    q: "In a group of 50 students (30 girls, 20 boys), given the selected student is a boy and 15 boys are in the science club, what is the probability the student is in the science club?",
+    opts: ["3/10","1/2","2/5","3/5"],
+    ans: 3
+  },
+  {
+    q: "A box contains 3 red balls and 5 green balls. Two balls are drawn without replacement. What is the probability the first is green and the second is red?",
+    opts: ["1/16","5/16","3/20","5/24"],
+    ans: 2
+  },
+  // 3. Correlation
+  {
+    section: "3. Correlation & Regression",
+    sectionIcon: "📈",
+    q: "What does a correlation coefficient of -0.8 indicate?",
+    opts: [
+      "A strong positive linear relationship",
+      "A strong negative linear relationship",
+      "A weak positive linear relationship",
+      "No linear relationship"
+    ],
+    ans: 1
+  },
+  {
+    q: "In linear regression, what does the slope of the regression line represent?",
+    opts: [
+      "The strength of the relationship between the variables",
+      "The change in the dependent variable for a one-unit change in the independent variable",
+      "The intercept of the regression line",
+      "The correlation coefficient"
+    ],
+    ans: 1
+  },
+  {
+    q: "If the correlation coefficient between two variables is 0.25, what can be said about their relationship?",
+    opts: [
+      "There is a strong positive linear relationship",
+      "There is a moderate positive linear relationship",
+      "There is a weak positive linear relationship",
+      "There is no linear relationship"
+    ],
+    ans: 2
+  },
+  {
+    q: "In a scatter plot, if data points form a straight line sloping upwards from left to right, what type of correlation is indicated?",
+    opts: ["Positive correlation","Negative correlation","No correlation","Perfect correlation"],
+    ans: 0
+  },
+  {
+    q: "Given X: 10, 15, 20, 25 and Y: 5, 10, 15, 20 — what is the Spearman correlation coefficient?",
+    opts: ["1","0.8","0.5","-1"],
+    ans: 0
+  },
+  {
+    q: "If the actual observed value of the dependent variable is 20 and the predicted value is 25, what is the absolute error?",
+    opts: ["5","-5","20","-20"],
+    ans: 0
+  },
+  {
+    q: "In a simple linear regression model with intercept = 15 and slope = 3, what is the predicted value when the independent variable is 7?",
+    opts: ["15","21","36","42"],
+    ans: 2
+  },
+  {
+    q: "In a simple linear regression model with intercept = 15 and slope = 3, what is the predicted value when the independent variable is 7? (confirm)",
+    opts: ["15","21","36","42"],
+    ans: 2
+  },
+  {
+    q: "What is the range of values that the Pearson correlation coefficient can take?",
+    opts: ["-1 to 1","0 to 1","-∞ to +∞","0 to ∞"],
+    ans: 0
+  },
+  {
+    q: "Given Temperature (°C): 30 → Ice Cream Sales: 200 and Temperature (°C): 25 → Ice Cream Sales: 180 — what type of correlation is this?",
+    opts: [
+      "Strong positive correlation",
+      "Weak positive correlation",
+      "Strong negative correlation",
+      "Weak negative correlation"
+    ],
+    ans: 1
+  },
+  // 4. Random Variables
+  {
+    section: "4. Random Variables",
+    sectionIcon: "🎯",
+    q: "If X is a continuous random variable, what is the probability that X equals a specific value?",
+    opts: ["1","0","Between 0 and 1","Cannot be determined"],
+    ans: 1
+  },
+  {
+    q: "If X is a discrete random variable, what is the probability that X equals a specific value?",
+    opts: ["1","0","Between 0 and 1","Cannot be determined"],
+    ans: 2
+  },
+  {
+    q: "Which of the following is an example of a continuous random variable?",
+    opts: [
+      "Number of siblings a person has",
+      "Temperature in degrees Celsius",
+      "Number of pages in a book",
+      "Number of correct answers on a test"
+    ],
+    ans: 1
+  },
+  {
+    q: "Which of the following is an example of a discrete random variable?",
+    opts: [
+      "Weight of a person",
+      "Height of a building",
+      "Number of heads obtained in three coin tosses",
+      "Time taken to complete a marathon"
+    ],
+    ans: 2
+  },
+  {
+    q: "A discrete random variable X has: P(X=1)=0.3, P(X=2)=0.4, P(X=3)=0.3. What is the mean of X?",
+    opts: ["1.3","2.0","2.3","3.0"],
+    ans: 1
+  },
+  {
+    q: "For the same random variable X with P(X=1)=0.3, P(X=2)=0.4, P(X=3)=0.3 — what is the variance?",
+    opts: ["0.6","0.7","1.0","1.1"],
+    ans: 0
+  },
+  {
+    q: "A continuous random variable X has density f(x) = 6x(1−x) for 0 ≤ x ≤ 1. What is the mean of X?",
+    opts: ["1/6","1/4","1/3","1/2"],
+    ans: 3
+  },
+  {
+    q: "For the continuous random variable X with f(x) = 6x(1−x) for 0 ≤ x ≤ 1 — what is the variance?",
+    opts: ["0.05","0.5","0.03","0.04"],
+    ans: 0
+  },
+  {
+    q: "A discrete random variable X has: P(X=1)=k, P(X=2)=0.4, P(X=3)=0.2. What value of k makes P(X) a valid probability function?",
+    opts: ["0.1","0.2","0.3","0.5"],
+    ans: 3
+  },
+  {
+    q: "Given E(X) = 10, Var(X) = 25, and Y = 2X + 5, what are E(Y) and Var(Y)?",
+    opts: [
+      "E(Y)=25, Var(Y)=100",
+      "E(Y)=20, Var(Y)=50",
+      "E(Y)=15, Var(Y)=75",
+      "E(Y)=30, Var(Y)=125"
+    ],
+    ans: 0
+  },
+  {
+    q: "In a binomial distribution with n=6 and p=0.7, what is the expected value?",
+    opts: ["4.2","3.5","4.0","4.5"],
+    ans: 0
+  },
+  {
+    q: "If the probability of success in a single trial is 0.6, what is the variance when conducting 8 independent trials?",
+    opts: ["3.84","3.20","2.88","2.56"],
+    ans: 2
+  },
+  {
+    q: "In a binomial distribution with n=12 and p=0.2, what is the probability of getting less than 3 successes?",
+    opts: ["0.785","0.216","0.184","0.028"],
+    ans: 0
+  },
+  {
+    q: "Given a normal distribution with μ=50 and σ=10, what is the probability P(X < 40)?",
+    opts: ["0.0228","0.1587","0.3413","0.4772"],
+    ans: 0
+  },
+  {
+    q: "In a normal distribution with μ=60 and σ=8, what is the probability that a randomly selected value falls between 48 and 72?",
+    opts: ["0.1587","0.4772","0.6827","0.8413"],
+    ans: 2
+  },
+  {
+    q: "In a normal distribution with μ=80 and σ=12, what is the z-score for a value of 95?",
+    opts: ["0.833","0.916","1.083","1.25"],
+    ans: 3
+  },
+  {
+    q: "If Z is a standard normal random variable, what is the probability that Z is between -1 and 1?",
+    opts: ["0.4772","0.6827","0.8413","0.9545"],
+    ans: 1
+  }
+];
+
+const letters = ['A','B','C','D'];
+let score = 0;
+let answered = 0;
+const total = questions.length;
+
+function updateProgress() {
+  document.getElementById('progressFill').style.width = (answered / total * 100) + '%';
+  document.getElementById('progressText').textContent = `${answered} / ${total} questions`;
+  document.getElementById('scoreNum').textContent = score;
+}
+
+function checkResult() {
+  if (answered < total) return;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('show');
+  document.getElementById('resultScoreBig').textContent = `${score}/${total}`;
+  const pct = score / total;
+  let emoji, title, sub;
+  if (pct >= 0.9)       { emoji='🏆'; title='Outstanding!';    sub='Excellent command of statistics — well done!'; }
+  else if (pct >= 0.75) { emoji='🎯'; title='Great job!';      sub='Strong result — review the questions you missed.'; }
+  else if (pct >= 0.5)  { emoji='📚'; title='Keep going!';     sub='Room to improve — revisit the material and try again.'; }
+  else                   { emoji='💪'; title='Needs work';      sub="Don't give up! Go back to the basics and review carefully."; }
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+  banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function buildExam() {
+  const container = document.getElementById('examContainer');
+  let lastSection = null;
+
+  questions.forEach((q, qi) => {
+    if (q.section && q.section !== lastSection) {
+      lastSection = q.section;
+      const sec = document.createElement('div');
+      sec.className = 'section-title';
+      sec.innerHTML = `<div class="section-icon">${q.sectionIcon}</div><h2>${q.section}</h2><div class="line"></div>`;
+      container.appendChild(sec);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${qi}`;
+    card.innerHTML = `
+      <div class="question-header">
+        <div class="q-num">${qi + 1}</div>
+        <div class="q-text">${q.q}</div>
+      </div>
+      <div class="options" id="opts-${qi}"></div>
+      <div class="feedback" id="fb-${qi}"></div>
+    `;
+    container.appendChild(card);
+
+    const optsDiv = card.querySelector(`#opts-${qi}`);
+    q.opts.forEach((opt, oi) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = `<div class="option-letter">${letters[oi]}</div><div class="option-text">${opt}</div>`;
+      btn.addEventListener('click', () => handleAnswer(qi, oi));
+      optsDiv.appendChild(btn);
+    });
+  });
+
+  updateProgress();
+}
+
+function handleAnswer(qi, chosen) {
+  const card = document.getElementById(`card-${qi}`);
+  if (card.classList.contains('answered')) return;
+
+  card.classList.add('answered');
+  answered++;
+
+  const allBtns = card.querySelectorAll('.option-btn');
+  const fb = document.getElementById(`fb-${qi}`);
+  const correct = questions[qi].ans;
+
+  allBtns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === correct) b.classList.add('correct');
+    else if (i === chosen && chosen !== correct) b.classList.add('wrong');
+    else b.classList.add('dimmed');
+  });
+
+  if (chosen === correct) {
+    score++;
+    fb.className = 'feedback correct-fb show';
+    fb.innerHTML = `<span class="fb-icon">✅</span> Correct!`;
+  } else {
+    fb.className = 'feedback wrong-fb show';
+    fb.innerHTML = `<span class="fb-icon">❌</span> The correct answer is: <strong>${letters[correct]} — ${questions[qi].opts[correct]}</strong>`;
+  }
+
+  updateProgress();
+  checkResult();
+}
+
+buildExam();
+</script>
+</body>
+</html>
